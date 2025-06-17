@@ -1,92 +1,100 @@
 import streamlit as st
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import numpy as np
 import joblib
 
-# Load your model
+# Load your trained model (replace with actual model path)
 model = joblib.load("model.pkl")
 
-# Page settings
-st.set_page_config(page_title="EcoTrace – Carbon Footprint Estimator", layout="centered")
+st.set_page_config(page_title="Carbon Footprint Calculator", layout="centered")
 
-# Inject custom CSS
+# Custom CSS styling to match your exact reference
 st.markdown("""
-    <style>
-    .main {
-        background-image: url('https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=1950&q=80');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }
-    .glass-box {
-        background: rgba(255, 255, 255, 0.90);
-        padding: 2.5rem 3rem;
-        border-radius: 15px;
-        max-width: 500px;
-        margin: 4rem auto;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        color: #000000;
-    }
-    .title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        text-align: left;
-        margin-bottom: 2rem;
-        color: white;
-    }
-    .title span {
-        color: #f77f00;
-    }
-    .suggestions {
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        color: #333333;
-    }
-    </style>
+<style>
+body, .main {
+    background-image: url('https://images.unsplash.com/photo-1552089123-2a5387e8e6df');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+h1 {
+    font-size: 2.8rem;
+    color: white;
+    font-weight: bold;
+    padding-top: 2rem;
+    text-align: center;
+}
+
+.box {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+button[kind="primary"] {
+    background-color: #f77f00;
+    color: white;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+}
+
+.stTextInput > div > input, .stNumberInput input, .stSelectbox > div {
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+ul {
+    margin-left: 1.5rem;
+    color: #333;
+}
+</style>
 """, unsafe_allow_html=True)
 
-# Header text
-st.markdown('<div class="title">What\'s the <span>carbon footprint</span> of your lifestyle?</div>', unsafe_allow_html=True)
+st.markdown("<h1>What's the <span style='color:#f77f00;'>carbon footprint</span> of your lifestyle?</h1>", unsafe_allow_html=True)
 
-# Input box (glass)
-st.markdown('<div class="glass-box">', unsafe_allow_html=True)
+# Glass-styled container
+tab = st.container()
+with tab:
+    st.markdown('<div class="box">', unsafe_allow_html=True)
 
-# Inputs
-transport_km = st.number_input("Transport (km traveled)", min_value=0.0)
-electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0)
-diet_type = st.selectbox("Diet Type", options=["Vegetarian", "Non-Vegetarian"])
-waste_kg = st.number_input("Waste generated (kg)", min_value=0.0)
+    transport = st.number_input("Transport (km traveled)", min_value=0.0, format="%.2f")
+    electricity = st.number_input("Electricity usage (kWh)", min_value=0.0, format="%.2f")
+    diet = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
+    waste = st.number_input("Waste generated (kg)", min_value=0.0, format="%.2f")
 
-# Prediction
-if st.button("Calculate My Emissions"):
-    diet_encoded = 0 if diet_type == "Vegetarian" else 1
+    if st.button("Calculate my emissions"):
+        encoded_diet = 0 if diet == "Vegetarian" else 1
+        input_df = pd.DataFrame([[transport, electricity, encoded_diet, waste]],
+                                 columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
+        log_prediction = model.predict(input_df)[0]
+        result = round(np.expm1(log_prediction), 2)
 
-    input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
-                              columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
+        st.success(f"Your estimated carbon footprint is {result} kgCO₂")
 
-    log_prediction = model.predict(input_data)[0]
-    final_prediction = np.expm1(log_prediction)
+        # Show suggestions based on input
+        tips = []
+        if transport > 100:
+            tips.append("Consider using public transport or carpooling more often.")
+        if electricity > 200:
+            tips.append("Switch to energy-efficient appliances or reduce electricity use.")
+        if diet == "Non-Vegetarian":
+            tips.append("Incorporate plant-based meals to reduce dietary impact.")
+        if waste > 10:
+            tips.append("Reduce, reuse, and recycle to manage waste more effectively.")
 
-    st.success(f"Your estimated carbon footprint is: **{round(final_prediction, 2)} kgCO₂**")
+        if tips:
+            st.markdown("""<div class='box'><strong>Suggestions:</strong><ul>""", unsafe_allow_html=True)
+            for tip in tips:
+                st.markdown(f"<li>{tip}</li>", unsafe_allow_html=True)
+            st.markdown("</ul></div>", unsafe_allow_html=True)
+        else:
+            st.info("Your lifestyle already aligns well with sustainability goals! 🌱")
 
-    # Suggestions section
-    st.markdown("### Suggestions")
-    tips = []
-
-    if transport_km > 100:
-        tips.append("🚗 Consider using public transport or carpooling.")
-    if electricity_kWh > 200:
-        tips.append("💡 Try using energy-efficient lighting or appliances.")
-    if diet_type == "Non-Vegetarian":
-        tips.append("🥦 A vegetarian diet once a week reduces your impact.")
-    if waste_kg > 10:
-        tips.append("♻️ Recycle and compost organic waste.")
-
-    if tips:
-        for tip in tips:
-            st.markdown(f"- {tip}")
-    else:
-        st.info("You're doing great already! 🌿")
-
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
