@@ -1,100 +1,103 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
+import pandas as pd
 import joblib
 
-# Load your trained model (replace with actual model path)
+# Load the model
 model = joblib.load("model.pkl")
 
-st.set_page_config(page_title="Carbon Footprint Calculator", layout="centered")
+# ----- PAGE SETUP -----
+st.set_page_config(page_title="EcoTrace Landing", layout="centered")
 
-# Custom CSS styling to match your exact reference
+# ----- CUSTOM CSS -----
 st.markdown("""
-<style>
-body, .main {
-    background-image: url('https://images.unsplash.com/photo-1552089123-2a5387e8e6df');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-
-h1 {
-    font-size: 2.8rem;
-    color: white;
-    font-weight: bold;
-    padding-top: 2rem;
-    text-align: center;
-}
-
-.box {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 500px;
-    margin: 2rem auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-button[kind="primary"] {
-    background-color: #f77f00;
-    color: white;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-}
-
-.stTextInput > div > input, .stNumberInput input, .stSelectbox > div {
-    background-color: #f1f1f1;
-    border-radius: 8px;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-}
-
-ul {
-    margin-left: 1.5rem;
-    color: #333;
-}
-</style>
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+    .stApp {
+        background-image: url("https://images.unsplash.com/photo-1598670859841-0b9f9e2c9d9a?auto=format&fit=crop&w=1950&q=80");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: white;
+    }
+    .form-card {
+        background: rgba(0, 128, 128, 0.8); /* Teal with transparency */
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        max-width: 400px;
+        margin: auto;
+        margin-top: 50px;
+    }
+    .hero {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;   
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+    .highlight {
+        color: #ff914d;
+    }
+    .footer {
+        text-align: center;
+        color: #fff;
+        margin-top: 40px;
+        font-size: 16px;
+    }
+    input {
+        border-radius: 10px !important;
+        padding: 10px;
+        width: 100%;
+        margin-bottom: 15px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+    }
+    button {
+        background-color: #FFD700;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background-color: #FCD975;
+    }
+    </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1>What's the <span style='color:#f77f00;'>carbon footprint</span> of your lifestyle?</h1>", unsafe_allow_html=True)
+# ----- HERO HEADER -----
+st.markdown('<div class="hero">What\'s the <span class="highlight">carbon footprint</span><br>of your lifestyle?</div>', unsafe_allow_html=True)
 
-# Glass-styled container
-tab = st.container()
-with tab:
-    st.markdown('<div class="box">', unsafe_allow_html=True)
+# ----- FORM CARD -----
+with st.container():
+    st.markdown('<div class="form-card">', unsafe_allow_html=True)
 
-    transport = st.number_input("Transport (km traveled)", min_value=0.0, format="%.2f")
-    electricity = st.number_input("Electricity usage (kWh)", min_value=0.0, format="%.2f")
-    diet = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
-    waste = st.number_input("Waste generated (kg)", min_value=0.0, format="%.2f")
+    # Form inputs
+    transport_km = st.number_input("Transport (km traveled)", min_value=0.0, step=1.0, format="%.2f")
+    electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0, step=1.0, format="%.2f")
+    diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
+    waste_kg = st.number_input("Waste generated (kg)", min_value=0.0, step=1.0, format="%.2f")
 
-    if st.button("Calculate my emissions"):
-        encoded_diet = 0 if diet == "Vegetarian" else 1
-        input_df = pd.DataFrame([[transport, electricity, encoded_diet, waste]],
-                                 columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
-        log_prediction = model.predict(input_df)[0]
-        result = round(np.expm1(log_prediction), 2)
-
-        st.success(f"Your estimated carbon footprint is {result} kgCO₂")
-
-        # Show suggestions based on input
-        tips = []
-        if transport > 100:
-            tips.append("Consider using public transport or carpooling more often.")
-        if electricity > 200:
-            tips.append("Switch to energy-efficient appliances or reduce electricity use.")
-        if diet == "Non-Vegetarian":
-            tips.append("Incorporate plant-based meals to reduce dietary impact.")
-        if waste > 10:
-            tips.append("Reduce, reuse, and recycle to manage waste more effectively.")
-
-        if tips:
-            st.markdown("""<div class='box'><strong>Suggestions:</strong><ul>""", unsafe_allow_html=True)
-            for tip in tips:
-                st.markdown(f"<li>{tip}</li>", unsafe_allow_html=True)
-            st.markdown("</ul></div>", unsafe_allow_html=True)
-        else:
-            st.info("Your lifestyle already aligns well with sustainability goals! 🌱")
+    if st.button("Calculate My Emissions"):
+        diet_encoded = 0 if diet_type == "Vegetarian" else 1
+        input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
+                                  columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
+        log_prediction = model.predict(input_data)[0]
+        final_prediction = np.expm1(log_prediction)
+        st.success(f"🌱 Your estimated carbon footprint: {round(final_prediction, 2)} kgCO₂")
 
     st.markdown('</div>', unsafe_allow_html=True)
+
+# ----- FOOTER -----
+st.markdown('<div class="footer">Not ready to get started? <a style="color:#FFD700" href="#">Learn more</a></div>', unsafe_allow_html=True)
