@@ -9,7 +9,8 @@ model = joblib.load("model.pkl")
 
 st.set_page_config(page_title="EcoTrace - Carbon Footprint Dashboard", layout="wide")
 
-# ----- STYLING -----
+# STYLING 
+
 st.markdown("""
     <style>
         .stApp {
@@ -70,8 +71,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ----- TITLE -----
-# ----- TITLE + INFO SECTION SIDE BY SIDE -----
+#TITLE
+
 col_title, col_info = st.columns([2, 2])
 
 with col_title:
@@ -89,7 +90,7 @@ with col_info:
         </div>
     """, unsafe_allow_html=True)
 
-# ----- USER INPUT FORM -----
+# USER INPUT FORM 
 st.markdown('<div class="glass-box">', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
@@ -102,14 +103,13 @@ with col2:
 
 diet_encoded = 0 if diet_type == "Vegetarian" else 1
 
-# ----- CALCULATE FOOTPRINT -----
+#  CALCULATE FOOTPRINT 
 if st.button("Calculate Footprint"):
     input_df = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
                              columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
     log_prediction = model.predict(input_df)[0]
     final_prediction = np.expm1(log_prediction)
 
-    # ----- METRICS DISPLAY -----
     st.markdown('<h2 class="custom-title">Results</h2>', unsafe_allow_html=True)
     colA, colB = st.columns(2)
     with colA:
@@ -135,12 +135,10 @@ if st.button("Calculate Footprint"):
     plt.legend(wedges, labels, loc="center left", bbox_to_anchor=(1, 0.5), title="Categories")
     st.pyplot(fig)
 
-    # ----- SUSTAINABILITY SUGGESTIONS -----
-        # ----- SUSTAINABILITY SUGGESTIONS -----
+    # SUSTAINABILITY SUGGESTIONS 
     st.markdown('<h2 class="custom-title">Sustainable Suggestions</h2>', unsafe_allow_html=True)
     suggestions = []
 
-    # Define sustainable thresholds
     sustainable_targets = {
         "Transport_km": 30,        # e.g., <30 km/week
         "Electricity_kWh": 20,     # e.g., <20 kWh/week
@@ -149,9 +147,9 @@ if st.button("Calculate Footprint"):
 
     # Transport
     if transport_km > sustainable_targets["Transport_km"] * 2:
-        suggestions.append("🚗 Your transport footprint is high. Try reducing private car usage and consider biking or public transport.")
+        suggestions.append("Your transport footprint is high. Try reducing private car usage and consider biking or public transport.")
     elif transport_km > sustainable_targets["Transport_km"]:
-        suggestions.append("🚴 Moderate transport emissions detected. Carpooling or occasional biking can help reduce this further.")
+        suggestions.append("Moderate transport emissions detected. Carpooling or occasional biking can help reduce this further.")
 
     # Electricity
     if electricity_kWh > sustainable_targets["Electricity_kWh"] * 2:
@@ -168,8 +166,7 @@ if st.button("Calculate Footprint"):
         suggestions.append("High waste levels. Recycle, compost, and reduce single-use plastics.")
     elif waste_kg > sustainable_targets["Waste_kg"]:
         suggestions.append("Moderate waste detected. Try composting and reducing packaged products.")
-
-    # Based on prediction
+        
     if final_prediction > 100:
         suggestions.append("Your total carbon footprint is above the sustainable average. Try making changes across multiple areas.")
     elif final_prediction < 50:
@@ -187,8 +184,5 @@ if st.button("Calculate Footprint"):
     else:
         st.success("Your footprint is already quite low. Keep it up!")
 
-
-
-
-# ----- FOOTER -----
+# FOOTER
 st.markdown("<hr>", unsafe_allow_html=True)
