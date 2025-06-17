@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 # Load trained model
 model = joblib.load("model.pkl")
 
-# UI config
 st.set_page_config(page_title="EcoTrace - Carbon Footprint Dashboard", layout="wide")
 
 # ----- STYLING -----
@@ -116,7 +115,7 @@ if st.button("Calculate Footprint"):
                                       wedgeprops={'edgecolor': 'white'},
                                       pctdistance=0.85)
     ax.axis('equal')
-    centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+    centre_circle = plt.Circle((0, 0), 0.70, fc='black', alpha=0.6)
     fig.gca().add_artist(centre_circle)
     plt.legend(wedges, labels, loc="center left", bbox_to_anchor=(1, 0.5), title="Categories")
     st.pyplot(fig)
@@ -142,6 +141,7 @@ if st.button("Calculate Footprint"):
         st.success("Your footprint is already quite low. Keep it up!")
 
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ----- FOOTER -----
 st.markdown("<hr>", unsafe_allow_html=True)
