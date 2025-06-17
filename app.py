@@ -57,6 +57,17 @@ st.markdown("""
             font-size: 28px;
             color: #6B7280;
         }
+            .custom-suggestion {
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white !important;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+    }
+    ::selection {
+        background: #2563eb; /* Keep the blue highlight */
+        color: white; /* Force text to white */
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -125,7 +136,8 @@ if st.button("Calculate Footprint"):
 
     if suggestions:
         for tip in suggestions:
-            st.markdown(f"- {tip}")
+            st.markdown(f'<div class="custom-suggestion">{tip}</div>', unsafe_allow_html=True)
+
     else:
         st.success("Your footprint is already quite low. Keep it up!")
 
