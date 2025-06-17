@@ -39,3 +39,11 @@ EcoTrace then:
 | `matplotlib`   | Pie chart for results          |
 | `joblib`       | Model persistence              |
 
+## Preview
+
+### Input Page
+![Input Page](images/1.png)
+
+### Prediction Result with Pie Chart
+![Prediction Result](images/2.png)
+
