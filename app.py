@@ -52,16 +52,26 @@ st.markdown("""
         margin-top: 40px;
         font-size: 16px;
     }
-    input {
+    /* Custom styles for Streamlit components */
+    .stNumberInput > div > div[data-baseweb="input"] {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border: none !important;
+        color: white !important;
         border-radius: 10px !important;
-        padding: 10px;
-        width: 100%;
-        margin-bottom: 15px;
-        background-color: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
+        padding: 10px !important;
+        width: 100% !important;
+        margin-bottom: 15px !important;
     }
-    button {
+    .stSelectbox > div > div[data-baseweb="select"] {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border: none !important;
+        color: white !important;
+        border-radius: 10px !important;
+        padding: 10px !important;
+        width: 100% !important;
+        margin-bottom: 15px !important;
+    }
+    .stButton button {
         background-color: #FFD700;
         color: black;
         border: none;
@@ -70,7 +80,7 @@ st.markdown("""
         cursor: pointer;
         font-size: 16px;
     }
-    button:hover {
+    .stButton button:hover {
         background-color: #FCD975;
     }
     </style>
@@ -81,23 +91,4 @@ st.markdown('<div class="hero">What\'s the <span class="highlight">carbon footpr
 
 # ----- FORM CARD -----
 with st.container():
-    st.markdown('<div class="form-card">', unsafe_allow_html=True)
-
-    # Form inputs
-    transport_km = st.number_input("Transport (km traveled)", min_value=0.0, step=1.0, format="%.2f")
-    electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0, step=1.0, format="%.2f")
-    diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
-    waste_kg = st.number_input("Waste generated (kg)", min_value=0.0, step=1.0, format="%.2f")
-
-    if st.button("Calculate My Emissions"):
-        diet_encoded = 0 if diet_type == "Vegetarian" else 1
-        input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
-                                  columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
-        log_prediction = model.predict(input_data)[0]
-        final_prediction = np.expm1(log_prediction)
-        st.success(f"🌱 Your estimated carbon footprint: {round(final_prediction, 2)} kgCO₂")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ----- FOOTER -----
-st.markdown('<div class="footer">Not ready to get started? <a style="color:#FFD700" href="#">Learn more</a></div>', unsafe_allow_html=True)
+    st.markdown('<div class="form-card">',
