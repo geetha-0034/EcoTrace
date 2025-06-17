@@ -1,56 +1,82 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
+import pandas as pd
 import joblib
 
-# Load model and scaler
+# Load the model
 model = joblib.load("model.pkl")
-scaler = joblib.load("scaler.pk1")
 
-# Features expected
-features = ['Transport_km', 'Electricity_kWh', 'Diet_Type', 'Waste_kg']
+# ----- PAGE SETUP -----
+st.set_page_config(page_title="EcoTrace Landing", layout="centered")
 
-# Page settings and background
-st.set_page_config(page_title="Carbon Footprint Calculator", layout="centered")
+# ----- CUSTOM CSS -----
 st.markdown("""
     <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .stApp {
-        background-image: url('https://images.unsplash.com/photo-1508780709619-79562169bc64');
+        background-image: url("https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=1950&q=80");
         background-size: cover;
-        color: white;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .glass-box {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        max-width: 400px;
+        margin: auto;
+    }
+    .hero {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+    .highlight {
+        color: #ff914d;
+    }
+    .footer {
+        text-align: center;
+        color: #fff;
+        margin-top: 40px;
+        font-size: 16px;
+    }
+    input {
+        border-radius: 10px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Main UI
-st.title("🌱 What's the **carbon footprint** of your website?")
-st.markdown("Learn what emissions your website is producing and how to offset and reduce them long-term.")
+# ----- HERO HEADER -----
+st.markdown('<div class="hero">What\'s the <span class="highlight">carbon footprint</span><br>of your lifestyle?</div>', unsafe_allow_html=True)
 
-with st.form("carbon_form"):
-    st.subheader("Enter your usage details:")
+# ----- FORM CARD -----
+with st.container():
+    st.markdown('<div class="glass-box">', unsafe_allow_html=True)
 
-    name = st.text_input("Your Name")
-    website = st.text_input("Your Website URL")
-    email = st.text_input("Your Email")
+    # Form inputs
+    transport_km = st.number_input("Transport (km traveled)", min_value=0.0)
+    electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0)
+    diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
+    waste_kg = st.number_input("Waste generated (kg)", min_value=0.0)
 
-    transport = st.number_input("Average Transport (km)", min_value=0)
-    electricity = st.number_input("Electricity Use (kWh)", min_value=0)
-    diet = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
-    waste = st.number_input("Waste Generated (kg)", min_value=0)
+    if st.button("Calculate My Emissions"):
+        diet_encoded = 0 if diet_type == "Vegetarian" else 1
+        input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
+                                  columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
+        log_prediction = model.predict(input_data)[0]
+        final_prediction = np.expm1(log_prediction)
+        st.success(f"🌱 Your estimated carbon footprint: {round(final_prediction, 2)} kgCO₂")
 
-    submitted = st.form_submit_button("🌍 Calculate my emissions")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    if submitted:
-        diet_type = 0 if diet == "Vegetarian" else 1
-        input_data = pd.DataFrame([[transport, electricity, diet_type, waste]], columns=features)
-
-        # Scale the input if scaler is used
-        input_scaled = scaler.transform(input_data)
-        pred_log = model.predict(input_scaled)
-        footprint = np.expm1(pred_log[0])  # if model used log1p target
-
-        st.success(f"Estimated Carbon Footprint: **{round(footprint, 2)} kgCO₂**")
-
-# Learn more section
-with st.expander("Not ready to get started? Learn more!"):
-    st.markdown("This calculator estimates your website’s carbon footprint using key input factors.")
+# ----- FOOTER -----
+st.markdown('<div class="footer">Not ready to get started? <a style="color:#FFD700" href="#">Learn more</a></div>', unsafe_allow_html=True)
