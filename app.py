@@ -36,7 +36,12 @@ st.markdown("""
            font-weight: 600;
            color: #ffffff; 
         }
-   
+        .custom-title {
+           font-size: 28px;
+           color: white;
+           font-weight: 700;
+           margin-top: 2rem;
+        }
         h2, .stMarkdown h2 {
            font-size: 24px !important;
            font-weight: 700 !important;
