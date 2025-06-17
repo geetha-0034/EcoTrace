@@ -85,7 +85,7 @@ with col_info:
             <h2 style="color:#1f2937;"> What is a Carbon Footprint?</h2>
             <h3 style="color:#111827; font-size: 16px;">
                 A <strong>carbon footprint</strong> is the total greenhouse gas emissions caused directly and indirectly by your activities —
-                including transport, electricity usage, diet, and waste.</h4>
+                including transport, electricity usage, diet, and waste.</h3>
                 <h3>Lowering your footprint helps combat climate change and builds a greener planet.
             </h3>
         </div>
