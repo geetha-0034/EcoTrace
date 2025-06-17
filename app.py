@@ -32,7 +32,7 @@ st.markdown("""
             margin-bottom: 1rem;
         }
         label[data-testid="stWidgetLabel"] {
-           font-size: 18px !important;
+           font-size: 24px !important;
            font-weight: 600;
            color: #ffffff; 
         }
