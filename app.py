@@ -36,19 +36,12 @@ st.markdown("""
            font-weight: 600;
            color: #ffffff; 
         }
-        /* Section titles like Results, Breakdown */
+   
         h2, .stMarkdown h2 {
            font-size: 24px !important;
            font-weight: 700 !important;
            color: #ffffff;
          }
-
-/* Suggestions bullet list */
-ul, .stMarkdown ul {
-    font-size: 18px;
-    color: #ffffff;
-    font-weight: 500;
-}
         .metric-box {
             background-color: #F9FAFB;
             padding: 20px;
@@ -92,7 +85,7 @@ if st.button("Calculate Footprint"):
     final_prediction = np.expm1(log_prediction)
 
     # ----- METRICS DISPLAY -----
-    st.subheader("Results")
+st.markdown('<h2 class="custom-title">Results</h2>', unsafe_allow_html=True)
     colA, colB = st.columns(2)
     with colA:
         st.markdown(f'<div class="metric-box"><h3>{final_prediction:.2f} kgCO₂</h3><p>Your Carbon Footprint</p></div>', unsafe_allow_html=True)
@@ -100,7 +93,7 @@ if st.button("Calculate Footprint"):
         st.markdown(f'<div class="metric-box"><h3>80 kgCO₂</h3><p>Sustainable Average</p></div>', unsafe_allow_html=True)
 
     # ----- PIE CHART -----
-    st.subheader("Footprint Breakdown")
+   st.markdown('<h2 class="custom-title">Footprint Breakdown</h2>', unsafe_allow_html=True)
     labels = ['Transport', 'Electricity', 'Diet Impact', 'Waste']
     values = [transport_km, electricity_kWh, 30 if diet_encoded else 10, waste_kg]
 
@@ -118,7 +111,7 @@ if st.button("Calculate Footprint"):
     st.pyplot(fig)
 
     # ----- SUSTAINABILITY SUGGESTIONS -----
-    st.subheader("Sustainability Suggestions")
+  st.markdown('<h2 class="custom-title">Sustainable Suggestions</h2>', unsafe_allow_html=True)
     suggestions = []
 
     if transport_km >= 50:
