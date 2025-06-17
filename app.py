@@ -169,8 +169,9 @@ if st.button("Calculate Footprint"):
         suggestion_html += "</ul></div>"
 
         st.markdown(suggestion_html, unsafe_allow_html=True)
-     else:
+    else:
         st.success("Your footprint is already quite low. Keep it up!")
+
 
 
 
