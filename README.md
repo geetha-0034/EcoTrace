@@ -15,14 +15,14 @@ As climate change continues to accelerate, people are often unaware of how their
 
 ## ⚙️ How It Works
 
-You provide 4 simple inputs:
+User provide 4 simple inputs:
 - 🚗 **Transport**: Distance traveled (in kilometers)
 - 🍽 **Diet Type**: Vegetarian or Non-Vegetarian
 - ⚡ **Electricity Usage**: Monthly consumption (in kWh)
 - 🗑 **Waste Generated**: Monthly waste (in kilograms)
 
 EcoTrace then:
-- ✅ Predicts your carbon footprint using a trained **Random Forest** model
+- ✅ Predicts your carbon footprint
 - 📊 Visualizes your emission breakdown in a pie chart
 - 💡 Provides sustainable living tips
 
@@ -39,12 +39,3 @@ EcoTrace then:
 | `matplotlib`   | Pie chart for results          |
 | `joblib`       | Model persistence              |
 
----
-
-## 📸 Screenshots
-
-_Include screenshots of your app UI and pie chart here if available._  
-To add them, save your images in the repo and use:
-
-```markdown
-![App Screenshot](images/app_screenshot.png)
