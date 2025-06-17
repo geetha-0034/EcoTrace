@@ -42,8 +42,8 @@ EcoTrace then:
 ## Preview
 
 ### Input Page
-![Input Page](images/1.png)
+![Input Page](1.png)
 
 ### Prediction Result with Pie Chart
-![Prediction Result](images/2.png)
+![Prediction Result](2.png)
 
