@@ -36,6 +36,19 @@ st.markdown("""
            font-weight: 600;
            color: #ffffff; 
         }
+        /* Section titles like Results, Breakdown */
+        h2, .stMarkdown h2 {
+           font-size: 24px !important;
+           font-weight: 700 !important;
+           color: #ffffff;
+         }
+
+/* Suggestions bullet list */
+ul, .stMarkdown ul {
+    font-size: 18px;
+    color: #ffffff;
+    font-weight: 500;
+}
         .metric-box {
             background-color: #F9FAFB;
             padding: 20px;
