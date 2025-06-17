@@ -2,85 +2,112 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
+import matplotlib.pyplot as plt
 
-# Load the model
+# Load trained model
 model = joblib.load("model.pkl")
 
-# ----- PAGE SETUP -----
-st.set_page_config(page_title="EcoTrace Landing", layout="centered")
+# UI config
+st.set_page_config(page_title="EcoTrace - Carbon Footprint Dashboard", layout="wide")
 
-# ----- CUSTOM CSS -----
+# ----- STYLING -----
 st.markdown("""
     <style>
-    body {
-        margin: 0;
-        padding: 0;
-    }
-    .stApp {
-        background-image: url("https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=1950&q=80");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    .glass-box {
-        background: rgba(255, 255, 255, 0.15);
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        backdrop-filter: blur(7px);
-        -webkit-backdrop-filter: blur(7px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        max-width: 400px;
-        margin: auto;
-    }
-    .hero {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #fff;
-        text-align: left;
-        margin-bottom: 1.5rem;
-    }
-    .highlight {
-        color: #ff914d;
-    }
-    .footer {
-        text-align: center;
-        color: #fff;
-        margin-top: 40px;
-        font-size: 16px;
-    }
-    input {
-        border-radius: 10px !important;
-    }
+        .main-title {
+            font-size: 36px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+        .subtitle {
+            font-size: 18px;
+            color: #4B5563;
+        }
+        .metric-box {
+            background-color: #F9FAFB;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .metric-box h3 {
+            font-size: 24px;
+            color: #111827;
+        }
+        .metric-box p {
+            font-size: 16px;
+            color: #6B7280;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# ----- HERO HEADER -----
-st.markdown('<div class="hero">What\'s the <span class="highlight">carbon footprint</span><br>of your lifestyle?</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title">EcoTrace: Carbon Footprint Estimator</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Predict your carbon impact and receive actionable sustainability suggestions</div><hr>', unsafe_allow_html=True)
 
-# ----- FORM CARD -----
-with st.container():
-    # Wrap the full form in the glass box
-    with st.form("emission_form"):
-        st.markdown('<div class="glass-box">', unsafe_allow_html=True)
+# ----- USER INPUTS -----
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    transport_km = st.number_input("Transport (km)", min_value=0.0, value=100.0)
+with col2:
+    electricity_kWh = st.number_input("Electricity Usage (kWh)", min_value=0.0, value=50.0)
+with col3:
+    diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
+with col4:
+    waste_kg = st.number_input("Waste Generated (kg)", min_value=0.0, value=5.0)
 
-        transport_km = st.number_input("Transport (km traveled)", min_value=0.0)
-        electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0)
-        diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
-        waste_kg = st.number_input("Waste generated (kg)", min_value=0.0)
+diet_encoded = 0 if diet_type == "Vegetarian" else 1
 
-        submit_button = st.form_submit_button("Calculate My Emissions")
+# ----- CALCULATE FOOTPRINT -----
+if st.button("Calculate Footprint"):
+    input_df = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
+                             columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
+    log_prediction = model.predict(input_df)[0]
+    final_prediction = np.expm1(log_prediction)
 
-        if submit_button:
-            diet_encoded = 0 if diet_type == "Vegetarian" else 1
-            input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
-                                      columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
-            log_prediction = model.predict(input_data)[0]
-            final_prediction = np.expm1(log_prediction)
-            st.success(f"🌱 Your estimated carbon footprint: {round(final_prediction, 2)} kgCO₂")
+    # METRICS DISPLAY
+    st.subheader("Results")
+    colA, colB = st.columns(2)
+    with colA:
+        st.markdown(f'<div class="metric-box"><h3>{final_prediction:.2f} kgCO₂</h3><p>Your Carbon Footprint</p></div>', unsafe_allow_html=True)
+    with colB:
+        st.markdown(f'<div class="metric-box"><h3>80 kgCO₂</h3><p>Sustainable Average</p></div>', unsafe_allow_html=True)
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    # PIE CHART
+    st.subheader("Footprint Breakdown")
+    labels = ['Transport', 'Electricity', 'Diet Impact', 'Waste']
+    values = [transport_km, electricity_kWh, 30 if diet_encoded else 10, waste_kg]
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+    wedges, texts, autotexts = ax.pie(values,
+                                      labels=None,
+                                      autopct='%1.1f%%',
+                                      startangle=90,
+                                      wedgeprops={'edgecolor': 'white'},
+                                      pctdistance=0.85)
+    ax.axis('equal')
+    centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+    fig.gca().add_artist(centre_circle)
+    plt.legend(wedges, labels, loc="center left", bbox_to_anchor=(1, 0.5), title="Categories")
+    st.pyplot(fig)
+
+    # ----- SUGGESTIONS -----
+    st.subheader("Sustainability Suggestions")
+    suggestions = []
+
+    if transport_km >= 50:
+        suggestions.append("🚗 Reduce private vehicle usage by opting for public transport or carpooling.")
+    if electricity_kWh >= 40:
+        suggestions.append("⚡ Upgrade to energy-efficient appliances and turn off unused devices.")
+    if diet_encoded == 1:
+        suggestions.append("🥦 Incorporate more plant-based meals to reduce dietary emissions.")
+    if waste_kg >= 4:
+        suggestions.append("🗑️ Practice composting and minimize single-use plastics.")
+
+    if suggestions:
+        for tip in suggestions:
+            st.markdown(f"- {tip}")
+    else:
+        st.success("Your footprint is already quite low. Keep it up!")
 
 # ----- FOOTER -----
-with st.expander("Not ready to get started? Learn more!"):
-    st.markdown("This calculator estimates your carbon footprint based on your inputs related to lifestyle.")
+st.markdown("<hr>", unsafe_allow_html=True)
+st.caption("© 2025 EcoTrace | Built for climate education & awareness.")
