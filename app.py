@@ -31,6 +31,11 @@ st.markdown("""
             text-align: center;
             margin-bottom: 1rem;
         }
+        label[data-testid="stWidgetLabel"] {
+           font-size: 18px !important;
+           font-weight: 600;
+           color: #ffffff; 
+        }
         .metric-box {
             background-color: #F9FAFB;
             padding: 20px;
