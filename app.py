@@ -94,13 +94,13 @@ if st.button("Calculate Footprint"):
     suggestions = []
 
     if transport_km >= 50:
-        suggestions.append("🚗 Reduce private vehicle usage by opting for public transport or carpooling.")
+        suggestions.append(" Reduce private vehicle usage by opting for public transport or carpooling.")
     if electricity_kWh >= 40:
-        suggestions.append("⚡ Upgrade to energy-efficient appliances and turn off unused devices.")
+        suggestions.append(" Upgrade to energy-efficient appliances and turn off unused devices.")
     if diet_encoded == 1:
-        suggestions.append("🥦 Incorporate more plant-based meals to reduce dietary emissions.")
+        suggestions.append("Incorporate more plant-based meals to reduce dietary emissions.")
     if waste_kg >= 4:
-        suggestions.append("🗑️ Practice composting and minimize single-use plastics.")
+        suggestions.append("🗑 Practice composting and minimize single-use plastics.")
 
     if suggestions:
         for tip in suggestions:
