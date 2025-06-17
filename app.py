@@ -20,13 +20,13 @@ st.markdown("""
             background-attachment: fixed;
         }
         .main-title {
-            font-size: 36px;
-            font-weight: 600;
+            font-size: 52px;
+            font-weight: 800;
             color: #ffffff;
             text-align: center;
         }
         .subtitle {
-            font-size: 18px;
+            font-size: 32px;
             color: #e5e7eb;
             text-align: center;
             margin-bottom: 1rem;
@@ -39,11 +39,11 @@ st.markdown("""
             text-align: center;
         }
         .metric-box h3 {
-            font-size: 24px;
+            font-size: 28px;
             color: #111827;
         }
         .metric-box p {
-            font-size: 16px;
+            font-size: 28px;
             color: #6B7280;
         }
     </style>
