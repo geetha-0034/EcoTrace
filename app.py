@@ -19,18 +19,6 @@ st.markdown("""
             background-position: center;
             background-attachment: fixed;
         }
-        .glass-box {
-            background: rgba(0, 0, 0, 0.55);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.18);
-            max-width: 700px;
-            margin: 3rem auto;
-            color: #ffffff;
-        }
         .main-title {
             font-size: 36px;
             font-weight: 600;
