@@ -121,26 +121,52 @@ if st.button("Calculate Footprint"):
     st.pyplot(fig)
 
     # ----- SUSTAINABILITY SUGGESTIONS -----
+        # ----- SUSTAINABILITY SUGGESTIONS -----
     st.markdown('<h2 class="custom-title">Sustainable Suggestions</h2>', unsafe_allow_html=True)
     suggestions = []
 
-    if transport_km >= 50:
-        suggestions.append("Reduce private vehicle usage by opting for public transport or carpooling.")
-    if electricity_kWh >= 40:
-        suggestions.append("Upgrade to energy-efficient appliances and turn off unused devices.")
-    if diet_encoded == 1:
-        suggestions.append("Incorporate more plant-based meals to reduce dietary emissions.")
-    if waste_kg >= 4:
-        suggestions.append("Practice composting and minimize single-use plastics.")
+    # Define sustainable thresholds
+    sustainable_targets = {
+        "Transport_km": 30,        # e.g., <30 km/week
+        "Electricity_kWh": 20,     # e.g., <20 kWh/week
+        "Waste_kg": 2              # e.g., <2 kg/week
+    }
 
+    # Transport
+    if transport_km > sustainable_targets["Transport_km"] * 2:
+        suggestions.append("🚗 Your transport footprint is high. Try reducing private car usage and consider biking or public transport.")
+    elif transport_km > sustainable_targets["Transport_km"]:
+        suggestions.append("🚴 Moderate transport emissions detected. Carpooling or occasional biking can help reduce this further.")
+
+    # Electricity
+    if electricity_kWh > sustainable_targets["Electricity_kWh"] * 2:
+        suggestions.append("💡 High electricity usage. Consider energy-saving appliances and turning off devices when not needed.")
+    elif electricity_kWh > sustainable_targets["Electricity_kWh"]:
+        suggestions.append("⚡ You're using a fair amount of electricity. Use LED lights and monitor high-power devices.")
+
+    # Diet
+    if diet_encoded == 1:
+        suggestions.append("🥦 A non-vegetarian diet typically has a higher carbon footprint. Consider adding more plant-based meals.")
+
+    # Waste
+    if waste_kg > sustainable_targets["Waste_kg"] * 2:
+        suggestions.append("🗑️ High waste levels. Recycle, compost, and reduce single-use plastics.")
+    elif waste_kg > sustainable_targets["Waste_kg"]:
+        suggestions.append("♻️ Moderate waste detected. Try composting and reducing packaged products.")
+
+    # Based on prediction
+    if final_prediction > 100:
+        suggestions.append("📉 Your total carbon footprint is above the sustainable average. Try making changes across multiple areas.")
+    elif final_prediction < 50:
+        suggestions.append("🌟 Excellent! Your overall footprint is low. Keep up the eco-friendly habits!")
+
+    # Show suggestions
     if suggestions:
         for tip in suggestions:
-            st.markdown(f'<div class="custom-suggestion">{tip}</div>', unsafe_allow_html=True)
-
+            st.markdown(f"- {tip}")
     else:
         st.success("Your footprint is already quite low. Keep it up!")
 
-st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ----- FOOTER -----
