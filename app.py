@@ -2,112 +2,98 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
+import base64
+from PIL import Image
+import matplotlib.pyplot as plt
 
-# Load the model
+# Load trained model
 model = joblib.load("model.pkl")
 
-# ----- PAGE SETUP -----
-st.set_page_config(page_title="EcoTrace Landing", layout="centered")
+# Set page config
+st.set_page_config(page_title="EcoTrace - Carbon Footprint", layout="centered")
 
-# ----- CUSTOM CSS -----
-st.markdown("""
-    <style>
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-    }
-    .stApp {
-        background-image: url("https://images.unsplash.com/photo-1598670859841-0b9f9e2c9d9a?auto=format&fit=crop&w=1950&q=80");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        color: white;
-    }
-    .form-card {
-        background: rgba(0, 128, 128, 0.8); /* Teal with transparency */
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        backdrop-filter: blur(7px);
-        -webkit-backdrop-filter: blur(7px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        max-width: 400px;
-        margin: auto;
-        margin-top: 50px;
-    }
-    .hero {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #fff;   
-        text-align: left;
-        margin-bottom: 1.5rem;
-    }
-    .highlight {
-        color: #ff914d;
-    }
-    .footer {
-        text-align: center;
-        color: #fff;
-        margin-top: 40px;
-        font-size: 16px;
-    }
-    /* Custom styles for Streamlit components */
-    .stNumberInput > div > div[data-baseweb="input"] {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border: none !important;
-        color: white !important;
-        border-radius: 10px !important;
-        padding: 10px !important;
-        width: 100% !important;
-        margin-bottom: 15px !important;
-    }
-    .stSelectbox > div > div[data-baseweb="select"] {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border: none !important;
-        color: white !important;
-        border-radius: 10px !important;
-        padding: 10px !important;
-        width: 100% !important;
-        margin-bottom: 15px !important;
-    }
-    .stButton button {
-        background-color: #FFD700;
-        color: black;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    .stButton button:hover {
-        background-color: #FCD975;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Set background image
+def set_background(image_file):
+    with open(image_file, "rb") as image:
+        encoded = base64.b64encode(image.read()).decode()
+        css = f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{encoded}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        .card {{
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            margin: 2rem auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }}
+        .header-title {{
+            text-align: center;
+            font-size: 2.5rem;
+            color: #1a1a1a;
+            font-weight: 700;
+        }}
+        .orange-text {{
+            color: orange;
+        }}
+        </style>
+        """
+        st.markdown(css, unsafe_allow_html=True)
 
-# ----- HERO HEADER -----
-st.markdown('<div class="hero">What\'s the <span class="highlight">carbon footprint</span><br>of your lifestyle?</div>', unsafe_allow_html=True)
+# Apply background
+set_background("green_bg.png")  # Replace with your own greenery image
 
-# ----- FORM CARD -----
-with st.container():
-    st.markdown('<div class="form-card">', unsafe_allow_html=True)
+# Title Header
+st.markdown('<div class="header-title">What\'s the <span class="orange-text">carbon footprint</span><br>of your lifestyle?</div>', unsafe_allow_html=True)
 
-    # Form inputs
-    transport_km = st.number_input("Transport (km traveled)", min_value=0.0, step=1.0, format="%.2f")
-    electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0, step=1.0, format="%.2f")
-    diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
-    waste_kg = st.number_input("Waste generated (kg)", min_value=0.0, step=1.0, format="%.2f")
+# Input Form Card
+st.markdown('<div class="card">', unsafe_allow_html=True)
 
-    if st.button("Calculate My Emissions"):
-        diet_encoded = 0 if diet_type == "Vegetarian" else 1
-        input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
-                                  columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
-        log_prediction = model.predict(input_data)[0]
-        final_prediction = np.expm1(log_prediction)
-        st.success(f"🌱 Your estimated carbon footprint: {round(final_prediction, 2)} kgCO₂")
+transport_km = st.number_input("Transport (km traveled)", min_value=0.0, value=0.0)
+electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0, value=0.0)
+diet_type = st.selectbox("Diet Type", options=["Vegetarian", "Non-Vegetarian"])
+waste_kg = st.number_input("Waste generated (kg)", min_value=0.0, value=0.0)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+if st.button("Calculate My Emissions"):
+    diet_encoded = 0 if diet_type == "Vegetarian" else 1
+    input_df = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
+                            columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
+    log_prediction = model.predict(input_df)[0]
+    final_prediction = round(np.expm1(log_prediction), 2)
 
-# ----- FOOTER -----
-st.markdown('<div class="footer">Not ready to get started? <a style="color:#FFD700" href="#">Learn more</a></div>', unsafe_allow_html=True)
+    st.subheader("Results")
+    st.metric("Your Carbon Footprint", f"{final_prediction} kgCO₂")
+    sustainable_avg = 80.0
+    st.metric("Sustainable Average", f"{sustainable_avg} kgCO₂")
+
+    # Pie Chart
+    transport_pct = transport_km * 0.2
+    electricity_pct = electricity_kWh * 0.5
+    diet_pct = (diet_encoded * 30) + 10
+    waste_pct = waste_kg * 0.3
+
+    labels = ['Transport', 'Electricity', 'Diet Impact', 'Waste']
+    sizes = [transport_pct, electricity_pct, diet_pct, waste_pct]
+
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+    st.pyplot(fig)
+
+    # Suggestions
+    st.subheader("Suggestions to Reduce Carbon Footprint")
+    if diet_encoded == 1:
+        st.write("- Consider reducing meat consumption; plant-based diets produce fewer emissions.")
+    if transport_km > 50:
+        st.write("- Use public transport, biking or walking when possible.")
+    if electricity_kWh > 100:
+        st.write("- Use energy-efficient appliances and switch off unused electronics.")
+    if waste_kg > 5:
+        st.write("- Reduce, reuse, and recycle your household waste.")
+
+st.markdown('</div>', unsafe_allow_html=True)
