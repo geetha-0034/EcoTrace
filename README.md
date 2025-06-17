@@ -1,7 +1,7 @@
 # EcoTrace
 
 
-#EcoTrace: Predict Your Carbon Footprint
+# EcoTrace: Predict Your Carbon Footprint
 
 EcoTrace is a user-friendly carbon footprint prediction tool built using machine learning. It empowers individuals to understand the environmental impact of their daily habits and provides actionable suggestions to adopt a more sustainable lifestyle.
 
