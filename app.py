@@ -83,10 +83,9 @@ with col_info:
     st.markdown("""
         <div style="background-color: rgba(255,255,255,0.85); padding: 20px; border-radius: 10px; margin-top: 20px;">
             <h2 style="color:#1f2937;"> What is a Carbon Footprint?</h2>
-            <h3 style="color:#111827; font-size: 16px;">
-               <h3> A <strong>carbon footprint</strong> is the total greenhouse gas emissions caused directly and indirectly by your activities —
-                including transport, electricity usage, diet, and waste. Lowering your footprint helps combat climate change and builds a greener planet.
-            </h3>
+            <h4 style="color:#111827; font-size: 16px;"> A <strong>carbon footprint</strong> is the total greenhouse gas emissions caused directly and indirectly by your activities —
+                including transport, electricity usage, diet, and waste.</h4>
+                <h4> Lowering your footprint helps combat climate change and builds a greener planet.</h3>
         </div>
     """, unsafe_allow_html=True)
 
@@ -117,7 +116,7 @@ if st.button("Calculate Footprint"):
     with colB:
         st.markdown(f'<div class="metric-box"><h3>80 kgCO₂</h3><p>Sustainable Average</p></div>', unsafe_allow_html=True)
 
-    # ----- PIE CHART -----
+    # PIE CHART
     st.markdown('<h2 class="custom-title">Footprint Breakdown</h2>', unsafe_allow_html=True)
     labels = ['Transport', 'Electricity', 'Diet Impact', 'Waste']
     values = [transport_km, electricity_kWh, 30 if diet_encoded else 10, waste_kg]
