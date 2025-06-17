@@ -71,8 +71,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ----- TITLE -----
-st.markdown('<div class="main-title">EcoTrace: Carbon Footprint Estimator</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Predict your carbon impact and receive actionable sustainability suggestions</div>', unsafe_allow_html=True)
+# ----- TITLE + INFO SECTION SIDE BY SIDE -----
+col_title, col_info = st.columns([2, 2])
+
+with col_title:
+    st.markdown('<div class="main-title">EcoTrace: Carbon Footprint Estimator</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">Predict your carbon impact and receive actionable sustainability suggestions</div>', unsafe_allow_html=True)
+
+with col_info:
+    st.markdown("""
+        <div style="background-color: rgba(255,255,255,0.85); padding: 20px; border-radius: 10px; margin-top: 20px;">
+            <h3 style="color:#1f2937;"> What is a Carbon Footprint?</h3>
+            <p style="color:#111827; font-size: 16px;">
+                A <strong>carbon footprint</strong> is the total greenhouse gas emissions caused directly and indirectly by your activities —
+                including transport, electricity usage, diet, and waste. Lowering your footprint helps combat climate change and builds a greener planet.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
 # ----- USER INPUT FORM -----
 st.markdown('<div class="glass-box">', unsafe_allow_html=True)
@@ -140,25 +155,25 @@ if st.button("Calculate Footprint"):
 
     # Electricity
     if electricity_kWh > sustainable_targets["Electricity_kWh"] * 2:
-        suggestions.append("💡 High electricity usage. Consider energy-saving appliances and turning off devices when not needed.")
+        suggestions.append("High electricity usage. Consider energy-saving appliances and turning off devices when not needed.")
     elif electricity_kWh > sustainable_targets["Electricity_kWh"]:
-        suggestions.append("⚡ You're using a fair amount of electricity. Use LED lights and monitor high-power devices.")
+        suggestions.append("You're using a fair amount of electricity. Use LED lights and monitor high-power devices.")
 
     # Diet
     if diet_encoded == 1:
-        suggestions.append("🥦 A non-vegetarian diet typically has a higher carbon footprint. Consider adding more plant-based meals.")
+        suggestions.append("A non-vegetarian diet typically has a higher carbon footprint. Consider adding more plant-based meals.")
 
     # Waste
     if waste_kg > sustainable_targets["Waste_kg"] * 2:
-        suggestions.append("🗑️ High waste levels. Recycle, compost, and reduce single-use plastics.")
+        suggestions.append("High waste levels. Recycle, compost, and reduce single-use plastics.")
     elif waste_kg > sustainable_targets["Waste_kg"]:
-        suggestions.append("♻️ Moderate waste detected. Try composting and reducing packaged products.")
+        suggestions.append("Moderate waste detected. Try composting and reducing packaged products.")
 
     # Based on prediction
     if final_prediction > 100:
-        suggestions.append("📉 Your total carbon footprint is above the sustainable average. Try making changes across multiple areas.")
+        suggestions.append("Your total carbon footprint is above the sustainable average. Try making changes across multiple areas.")
     elif final_prediction < 50:
-        suggestions.append("🌟 Excellent! Your overall footprint is low. Keep up the eco-friendly habits!")
+        suggestions.append("Excellent! Your overall footprint is low. Keep up the eco-friendly habits!")
     if suggestions:
         suggestion_html = """
         <div style="background-color: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px;">
