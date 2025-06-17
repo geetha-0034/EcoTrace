@@ -159,8 +159,7 @@ if st.button("Calculate Footprint"):
         suggestions.append("📉 Your total carbon footprint is above the sustainable average. Try making changes across multiple areas.")
     elif final_prediction < 50:
         suggestions.append("🌟 Excellent! Your overall footprint is low. Keep up the eco-friendly habits!")
-
-     if suggestions:
+    if suggestions:
         suggestion_html = """
         <div style="background-color: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px;">
             <ul style="color: white; font-size: 20px;">
