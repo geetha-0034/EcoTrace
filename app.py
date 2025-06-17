@@ -4,108 +4,89 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import joblib
 
-# Load the trained model
+# Load your model
 model = joblib.load("model.pkl")
 
-# Streamlit page config
-st.set_page_config(page_title="EcoTrace – Carbon Footprint Estimator", layout="wide")
+# Page settings
+st.set_page_config(page_title="EcoTrace – Carbon Footprint Estimator", layout="centered")
 
-# Custom CSS
+# Inject custom CSS
 st.markdown("""
     <style>
-    body {
-        color: #fff;
-    }
     .main {
-        background-image: url('https://images.unsplash.com/photo-1523978591478-c753949ff840?auto=format&fit=crop&w=1950&q=80');
+        background-image: url('https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=1950&q=80');
         background-size: cover;
+        background-repeat: no-repeat;
         background-attachment: fixed;
     }
     .glass-box {
-        background: rgba(255,255,255,0.9);
-        padding: 2rem;
+        background: rgba(255, 255, 255, 0.90);
+        padding: 2.5rem 3rem;
         border-radius: 15px;
-        box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+        max-width: 500px;
+        margin: 4rem auto;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         color: #000000;
     }
-    .title-text {
-        font-size: 2.5rem;
+    .title {
+        font-size: 2.2rem;
         font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 1rem;
-    }
-    .highlight {
-        color: #34A853;
-    }
-    .footer {
-        text-align: center;
-        font-size: 14px;
-        margin-top: 2rem;
+        text-align: left;
+        margin-bottom: 2rem;
         color: white;
+    }
+    .title span {
+        color: #f77f00;
+    }
+    .suggestions {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #333333;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# HEADER
-st.markdown('<div class="title-text">What\'s the <span class="highlight">carbon footprint</span> of your lifestyle?</div>', unsafe_allow_html=True)
+# Header text
+st.markdown('<div class="title">What\'s the <span>carbon footprint</span> of your lifestyle?</div>', unsafe_allow_html=True)
 
-# LAYOUT
-col1, col2 = st.columns([1, 1])
+# Input box (glass)
+st.markdown('<div class="glass-box">', unsafe_allow_html=True)
 
-with col1:
-    st.markdown('<div class="glass-box">', unsafe_allow_html=True)
+# Inputs
+transport_km = st.number_input("Transport (km traveled)", min_value=0.0)
+electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0)
+diet_type = st.selectbox("Diet Type", options=["Vegetarian", "Non-Vegetarian"])
+waste_kg = st.number_input("Waste generated (kg)", min_value=0.0)
 
-    transport_km = st.number_input("🚗 Transport (km traveled)", min_value=0.0)
-    electricity_kWh = st.number_input("⚡ Electricity usage (kWh)", min_value=0.0)
-    diet_type = st.selectbox("🥗 Diet Type", options=["Vegetarian", "Non-Vegetarian"])
-    waste_kg = st.number_input("🗑️ Waste generated (kg)", min_value=0.0)
+# Prediction
+if st.button("Calculate My Emissions"):
+    diet_encoded = 0 if diet_type == "Vegetarian" else 1
 
-    if st.button("Calculate My Emissions"):
-        diet_encoded = 0 if diet_type == "Vegetarian" else 1
+    input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
+                              columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
 
-        input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
-                                  columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
-        
-        log_prediction = model.predict(input_data)[0]
-        final_prediction = np.expm1(log_prediction)
+    log_prediction = model.predict(input_data)[0]
+    final_prediction = np.expm1(log_prediction)
 
-        st.success(f"Your estimated carbon footprint is: **{round(final_prediction, 2)} kgCO₂**")
+    st.success(f"Your estimated carbon footprint is: **{round(final_prediction, 2)} kgCO₂**")
 
-        # 💡 Suggestion logic
-        st.markdown("### Recommendations")
-        suggestions = []
+    # Suggestions section
+    st.markdown("### Suggestions")
+    tips = []
 
-        if transport_km > 100:
-            suggestions.append("🚙 Try using public transport, cycling, or carpooling.")
-        if electricity_kWh > 200:
-            suggestions.append("💡 Switch to energy-efficient appliances or solar power.")
-        if diet_type == "Non-Vegetarian":
-            suggestions.append("🥦 Consider a plant-based diet once or twice a week.")
-        if waste_kg > 10:
-            suggestions.append("♻️ Practice recycling and composting.")
+    if transport_km > 100:
+        tips.append("🚗 Consider using public transport or carpooling.")
+    if electricity_kWh > 200:
+        tips.append("💡 Try using energy-efficient lighting or appliances.")
+    if diet_type == "Non-Vegetarian":
+        tips.append("🥦 A vegetarian diet once a week reduces your impact.")
+    if waste_kg > 10:
+        tips.append("♻️ Recycle and compost organic waste.")
 
-        if suggestions:
-            for tip in suggestions:
-                st.markdown(f"- {tip}")
-        else:
-            st.info("Great job! You're already making eco-conscious choices. 🌿")
+    if tips:
+        for tip in tips:
+            st.markdown(f"- {tip}")
+    else:
+        st.info("You're doing great already! 🌿")
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col2:
-    if "final_prediction" in locals():
-        # FOOTPRINT PIE CHART
-        labels = ["Transport", "Electricity", "Diet", "Waste"]
-        values = np.array([transport_km, electricity_kWh, diet_encoded * 50, waste_kg])  # Adjust weights
-        total = values.sum()
-        if total == 0:
-            values = [1, 1, 1, 1]
-            total = 4
-
-        fig, ax = plt.subplots()
-        ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
-        ax.axis('equal')
-        st.pyplot(fig)
-
-# FOOTER
-st.markdown('<div class="footer">Want to learn more about reducing your footprint? <a href="https://www.epa.gov/environmental-topics/greener-living" style="color: #FFD700;">Click here</a></div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
