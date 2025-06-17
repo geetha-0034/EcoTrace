@@ -13,7 +13,7 @@ As climate change continues to accelerate, people are often unaware of how their
 
 ---
 
-## ⚙️ How It Works
+## ⚙How It Works
 
 User provide 4 simple inputs:
 - **Transport**: Distance traveled (in kilometers)
@@ -28,7 +28,7 @@ EcoTrace then:
 
 ---
 
-##Tech Stack
+## Tech Stack
 
 | Tool           | Purpose                        |
 |----------------|--------------------------------|
