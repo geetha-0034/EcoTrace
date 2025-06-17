@@ -38,15 +38,10 @@ st.markdown("""
         }
         .custom-title {
            font-size: 28px;
-           color: white;
+           color: white !important;
            font-weight: 700;
            margin-top: 2rem;
         }
-        h2, .stMarkdown h2 {
-           font-size: 24px !important;
-           font-weight: 700 !important;
-           color: #ffffff;
-         }
         .metric-box {
             background-color: #F9FAFB;
             padding: 20px;
@@ -90,7 +85,7 @@ if st.button("Calculate Footprint"):
     final_prediction = np.expm1(log_prediction)
 
     # ----- METRICS DISPLAY -----
-st.markdown('<h2 class="custom-title">Results</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="custom-title">Results</h2>', unsafe_allow_html=True)
     colA, colB = st.columns(2)
     with colA:
         st.markdown(f'<div class="metric-box"><h3>{final_prediction:.2f} kgCO₂</h3><p>Your Carbon Footprint</p></div>', unsafe_allow_html=True)
@@ -98,7 +93,7 @@ st.markdown('<h2 class="custom-title">Results</h2>', unsafe_allow_html=True)
         st.markdown(f'<div class="metric-box"><h3>80 kgCO₂</h3><p>Sustainable Average</p></div>', unsafe_allow_html=True)
 
     # ----- PIE CHART -----
-   st.markdown('<h2 class="custom-title">Footprint Breakdown</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="custom-title">Footprint Breakdown</h2>', unsafe_allow_html=True)
     labels = ['Transport', 'Electricity', 'Diet Impact', 'Waste']
     values = [transport_km, electricity_kWh, 30 if diet_encoded else 10, waste_kg]
 
@@ -116,17 +111,17 @@ st.markdown('<h2 class="custom-title">Results</h2>', unsafe_allow_html=True)
     st.pyplot(fig)
 
     # ----- SUSTAINABILITY SUGGESTIONS -----
-  st.markdown('<h2 class="custom-title">Sustainable Suggestions</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="custom-title">Sustainable Suggestions</h2>', unsafe_allow_html=True)
     suggestions = []
 
     if transport_km >= 50:
-        suggestions.append("🚗 Reduce private vehicle usage by opting for public transport or carpooling.")
+        suggestions.append("Reduce private vehicle usage by opting for public transport or carpooling.")
     if electricity_kWh >= 40:
-        suggestions.append("⚡ Upgrade to energy-efficient appliances and turn off unused devices.")
+        suggestions.append("Upgrade to energy-efficient appliances and turn off unused devices.")
     if diet_encoded == 1:
-        suggestions.append("🥦 Incorporate more plant-based meals to reduce dietary emissions.")
+        suggestions.append("Incorporate more plant-based meals to reduce dietary emissions.")
     if waste_kg >= 4:
-        suggestions.append("🗑️ Practice composting and minimize single-use plastics.")
+        suggestions.append("Practice composting and minimize single-use plastics.")
 
     if suggestions:
         for tip in suggestions:
