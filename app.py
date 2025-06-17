@@ -160,11 +160,17 @@ if st.button("Calculate Footprint"):
     elif final_prediction < 50:
         suggestions.append("🌟 Excellent! Your overall footprint is low. Keep up the eco-friendly habits!")
 
-    # Show suggestions
-    if suggestions:
+     if suggestions:
+        suggestion_html = """
+        <div style="background-color: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px;">
+            <ul style="color: white; font-size: 20px;">
+        """
         for tip in suggestions:
-            st.markdown(f"- {tip}")
-    else:
+            suggestion_html += f"<li>{tip}</li>"
+        suggestion_html += "</ul></div>"
+
+        st.markdown(suggestion_html, unsafe_allow_html=True)
+     else:
         st.success("Your footprint is already quite low. Keep it up!")
 
 
