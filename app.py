@@ -13,14 +13,35 @@ st.set_page_config(page_title="EcoTrace - Carbon Footprint Dashboard", layout="w
 # ----- STYLING -----
 st.markdown("""
     <style>
+        .stApp {
+            background-image: url("https://www.aprildialog.com/wp-content/uploads/2014/02/forest-photo.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .glass-box {
+            background: rgba(0, 0, 0, 0.55);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.18);
+            max-width: 700px;
+            margin: 3rem auto;
+            color: #ffffff;
+        }
         .main-title {
             font-size: 36px;
             font-weight: 600;
-            color: #1F2937;
+            color: #ffffff;
+            text-align: center;
         }
         .subtitle {
             font-size: 18px;
-            color: #4B5563;
+            color: #e5e7eb;
+            text-align: center;
+            margin-bottom: 1rem;
         }
         .metric-box {
             background-color: #F9FAFB;
@@ -40,18 +61,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# ----- TITLE -----
 st.markdown('<div class="main-title">EcoTrace: Carbon Footprint Estimator</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Predict your carbon impact and receive actionable sustainability suggestions</div><hr>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Predict your carbon impact and receive actionable sustainability suggestions</div>', unsafe_allow_html=True)
 
-# ----- USER INPUTS -----
-col1, col2, col3, col4 = st.columns(4)
+# ----- USER INPUT FORM -----
+st.markdown('<div class="glass-box">', unsafe_allow_html=True)
+
+col1, col2 = st.columns(2)
 with col1:
     transport_km = st.number_input("Transport (km)", min_value=0.0, value=100.0)
-with col2:
     electricity_kWh = st.number_input("Electricity Usage (kWh)", min_value=0.0, value=50.0)
-with col3:
+with col2:
     diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
-with col4:
     waste_kg = st.number_input("Waste Generated (kg)", min_value=0.0, value=5.0)
 
 diet_encoded = 0 if diet_type == "Vegetarian" else 1
@@ -63,7 +85,7 @@ if st.button("Calculate Footprint"):
     log_prediction = model.predict(input_df)[0]
     final_prediction = np.expm1(log_prediction)
 
-    # METRICS DISPLAY
+    # ----- METRICS DISPLAY -----
     st.subheader("Results")
     colA, colB = st.columns(2)
     with colA:
@@ -71,7 +93,7 @@ if st.button("Calculate Footprint"):
     with colB:
         st.markdown(f'<div class="metric-box"><h3>80 kgCO₂</h3><p>Sustainable Average</p></div>', unsafe_allow_html=True)
 
-    # PIE CHART
+    # ----- PIE CHART -----
     st.subheader("Footprint Breakdown")
     labels = ['Transport', 'Electricity', 'Diet Impact', 'Waste']
     values = [transport_km, electricity_kWh, 30 if diet_encoded else 10, waste_kg]
@@ -89,7 +111,7 @@ if st.button("Calculate Footprint"):
     plt.legend(wedges, labels, loc="center left", bbox_to_anchor=(1, 0.5), title="Categories")
     st.pyplot(fig)
 
-    # ----- SUGGESTIONS -----
+    # ----- SUSTAINABILITY SUGGESTIONS -----
     st.subheader("Sustainability Suggestions")
     suggestions = []
 
@@ -108,6 +130,7 @@ if st.button("Calculate Footprint"):
     else:
         st.success("Your footprint is already quite low. Keep it up!")
 
+st.markdown('</div>', unsafe_allow_html=True)
+
 # ----- FOOTER -----
 st.markdown("<hr>", unsafe_allow_html=True)
-st.caption("© 2025 EcoTrace | Built for climate education & awareness.")
