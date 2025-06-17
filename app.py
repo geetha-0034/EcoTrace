@@ -60,22 +60,27 @@ st.markdown('<div class="hero">What\'s the <span class="highlight">carbon footpr
 
 # ----- FORM CARD -----
 with st.container():
-    st.markdown('<div class="glass-box">', unsafe_allow_html=True)
+    # Wrap the full form in the glass box
+    with st.form("emission_form"):
+        st.markdown('<div class="glass-box">', unsafe_allow_html=True)
 
-    # Form inputs
-    transport_km = st.number_input("Transport (km traveled)", min_value=0.0)
-    electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0)
-    diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
-    waste_kg = st.number_input("Waste generated (kg)", min_value=0.0)
+        transport_km = st.number_input("Transport (km traveled)", min_value=0.0)
+        electricity_kWh = st.number_input("Electricity usage (kWh)", min_value=0.0)
+        diet_type = st.selectbox("Diet Type", ["Vegetarian", "Non-Vegetarian"])
+        waste_kg = st.number_input("Waste generated (kg)", min_value=0.0)
 
-    if st.button("Calculate My Emissions"):
-        diet_encoded = 0 if diet_type == "Vegetarian" else 1
-        input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
-                                  columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
-        log_prediction = model.predict(input_data)[0]
-        final_prediction = np.expm1(log_prediction)
-        st.success(f"🌱 Your estimated carbon footprint: {round(final_prediction, 2)} kgCO₂")
+        submit_button = st.form_submit_button("Calculate My Emissions")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        if submit_button:
+            diet_encoded = 0 if diet_type == "Vegetarian" else 1
+            input_data = pd.DataFrame([[transport_km, electricity_kWh, diet_encoded, waste_kg]],
+                                      columns=["Transport_km", "Electricity_kWh", "Diet_Type", "Waste_kg"])
+            log_prediction = model.predict(input_data)[0]
+            final_prediction = np.expm1(log_prediction)
+            st.success(f"🌱 Your estimated carbon footprint: {round(final_prediction, 2)} kgCO₂")
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# ----- FOOTER -----
 with st.expander("Not ready to get started? Learn more!"):
     st.markdown("This calculator estimates your carbon footprint based on your inputs related to lifestyle.")
