@@ -100,7 +100,7 @@ if st.button("Calculate Footprint"):
     if diet_encoded == 1:
         suggestions.append("Incorporate more plant-based meals to reduce dietary emissions.")
     if waste_kg >= 4:
-        suggestions.append("🗑 Practice composting and minimize single-use plastics.")
+        suggestions.append("Practice composting and minimize single-use plastics.")
 
     if suggestions:
         for tip in suggestions:
