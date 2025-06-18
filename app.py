@@ -120,21 +120,10 @@ if st.button("Calculate Footprint"):
 
     # PIE CHART
     st.markdown('<h2 class="custom-title">Footprint Breakdown</h2>', unsafe_allow_html=True)
-    st.markdown("""
-    <div style="
-        background: rgba(0, 0, 0, 0.5);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        backdrop-filter: blur(5.5px);
-        -webkit-backdrop-filter: blur(5.5px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        margin-bottom: 20px;">
-""", unsafe_allow_html=True)
     labels = ['Transport', 'Electricity', 'Diet Impact', 'Waste']
     values = [transport_km, electricity_kWh, 30 if diet_encoded else 10, waste_kg]
 
-    fig, ax = plt.subplots(figsize=(4, 3))
+    fig, ax = plt.subplots(figsize=(5, 4))
     wedges, texts, autotexts = ax.pie(values,
                                       labels=None,
                                       autopct='%1.1f%%',
