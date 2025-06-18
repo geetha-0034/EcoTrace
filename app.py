@@ -5,7 +5,7 @@ import joblib
 import matplotlib.pyplot as plt
 
 # Load trained model
-model = joblib.load("model.pkl")
+model = joblib.load("model (3).pkl")
 
 st.set_page_config(page_title="EcoTrace - Carbon Footprint Dashboard", layout="wide")
 
